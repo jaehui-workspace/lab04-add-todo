@@ -49,16 +49,14 @@ export async function addToDo(category, status, todo) {
         status: status,
         todo: todo
     };
-    await set(dbRef, newTodo);
+    await set(dbRef, newTodo)
 
-    // Fetch the updated todo items from the local store
-    const dbResponse = await get(dbRef); // Fetch the newly added todo from the database
-    const newTodoData = dbResponse.val(); // Extract the todo data from the database response
-    const todos = [{ ...newTodoData, uid: newTodoKey }, ...getStore()]; // Combine the new todo with existing todos
+    const dbResponse = await get(dbRef)
+    const newTodoData = dbResponse.val()
+    const todos = [{ ...newTodoData, uid: newTodoKey }, ...getStore()]
 
-    await createStore(todos); // Pass the updated todos to createStore
+    await createStore(todos)
 
-    // Notify the observers about the change
-    const store = getStore();
-    notify(store);
+    const store = getStore()
+    notify(store)
 }
