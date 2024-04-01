@@ -34,7 +34,7 @@ function onHandleClick(e) {
             updateToDoController(e.target.dataset.uid);
             break;
         case 'add':
-            addToDoController();
+            addToDoController(e.target.dataset.uid);
             break;
         default:
             break;
