@@ -1,12 +1,16 @@
-let store
+let store = [];
 
 const createStore = async (todos) => {
-    store = todos
+    if (!todos || !Array.isArray(todos)) {
+        throw new Error('Invalid todos data');
+    }
+
+    store = todos;
 
     if (store.length) {
-        return true
+        return true;
     }
-}
+};
 
 const getStore = () => {
     return store

@@ -1,6 +1,6 @@
 import {ref, set, get, push, child, remove, update} from 'firebase/database'
 import { db } from '../lib/firebase/config/firebaseInit'
-import { createStore, removeFromStore, updateStore } from './store'
+import { createStore, removeFromStore, updateStore, getStore } from './store'
 
 let observers = []
 
@@ -40,8 +40,8 @@ export function updateToDo(updatedToDo) {
     notify(store)
 }
 
-export function addToDo(category, status, todo) {
-    const dbRef = push(ref(db, 'todos'))
+export async function addToDo(category, status, todo) {
+    const dbRef = push(ref(db, 'todos'));
     const newTodoKey = dbRef.key;
     const newTodo = {
         uid: newTodoKey,
@@ -49,5 +49,16 @@ export function addToDo(category, status, todo) {
         status: status,
         todo: todo
     };
-    set(dbRef, newTodo);
+    await set(dbRef, newTodo);
+
+    // Fetch the updated todo items from the local store
+    const dbResponse = await get(dbRef); // Fetch the newly added todo from the database
+    const newTodoData = dbResponse.val(); // Extract the todo data from the database response
+    const todos = [{ ...newTodoData, uid: newTodoKey }, ...getStore()]; // Combine the new todo with existing todos
+
+    await createStore(todos); // Pass the updated todos to createStore
+
+    // Notify the observers about the change
+    const store = getStore();
+    notify(store);
 }
